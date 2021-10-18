@@ -2,19 +2,20 @@ import os
 import glob
 import tkinter as tk
 from tkinter import ttk
-#X:\CLINICAL\DENTAL\Quick Notes
+from analyze import scanForImports
+#X:\CLINICAL\DENTAL\QuickNotes
 
 
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-
-        self._path = "C:\\EDR Writer"
+        # the chosen path of operation
+        self._path = "C\\:Users\\ewilcox\\QuickNotes\\QuickNotes-v1.2"
         # config for root win
         self.title('Script Select')
         self.geometry('415x400')
-        #self.iconbitmap('')
+        self.iconbitmap('app/images/tooth_2.ico')
 
         # widgets
         self.lbl = ttk.Label(self,text='Select a Script')
@@ -23,12 +24,12 @@ class App(tk.Tk):
         self.script_field = ttk.Entry(width=55)
         self.script_field.place(x=15,y=205)
 
-        self.continue_img = tk.PhotoImage(file='C:/Users/Ethan/PycharmProjects/Word ERD/edr-images/continue.png')
-        self.acpt_scpt_button = ttk.Button(self, image=self.continue_img, width=7)
+        #self.continue_img = tk.PhotoImage(file='C:/Users/Ethan/PycharmProjects/Word ERD/edr-images/continue.png')
+        self.acpt_scpt_button = ttk.Button(self, width=7, text='Load')
 
         # script loader button
         self.acpt_scpt_button['command'] = self.button_clicked
-        self.acpt_scpt_button.place(x=360,y=205)
+        self.acpt_scpt_button.place(x=360,y=203)
 
         self.listbox = tk.Listbox(self,width=65)
         self.listbox.bind('<Double-1>', self.display_sel)
@@ -58,16 +59,21 @@ class App(tk.Tk):
 
 
     def load_script(self, file):
-        path = 'X:\\CLINICAL\\DENTAL\\Quick Notes\\EDR-scripts'
+        path = 'C:\\Users\\ewilcox\\QuickNotes\\QuickNotes-v1.2\\app\\EDR-scripts'
         os.chdir(path)
-        os.system(f'python {file}.py')
+        check_file = scanForImports(file+'.py')
+        if check_file == True:
+            # return to the user that this file isnt secure
+            print('File not secure')
+        elif check_file == False:
+            os.system(f'python {file}.py')
 
     def run_gen(self):
-        path = "C:\\"
+        path = self._path
         os.chdir(path)
         os.system('python new_script_gen.py')
 
-    def add_items(self,items,box):
+    def add_items(self, items, box):
         # add items to listbox
         cnt = 0
         for i in range(len(items)):
@@ -76,7 +82,7 @@ class App(tk.Tk):
 
     def get_scripts(self):
         # gets a list of python edr note files for the listbox
-        path = 'X:\\CLINICAL\\DENTAL\\Quick Notes\\EDR-scripts'
+        path = self._path + '\\app\\EDR-scripts'
         os.chdir(path)
         script_files = []
         for file in glob.glob("*.py"):
